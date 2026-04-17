@@ -97,6 +97,13 @@ out/
 # Vite
 dist/
 
+# ML artifacts and datasets
+backend/data/datasets/
+backend/models/weights/
+backend/runs/
+backend/*.pt
+*.cache
+
 # OS
 .DS_Store
 Thumbs.db
