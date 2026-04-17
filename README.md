@@ -1,35 +1,58 @@
 # KrishiRaksha AI
-Apni Fasal Ka Raksha Karo (Protect Your Crop)
 
-KrishiRaksha AI is a full-stack agriculture platform for crop risk monitoring, disease detection, advisory, SOS alerts, and community support.
+Production and operations guide for KrishiRaksha AI.
 
-## Tech Stack
-- Frontend: React + Vite + TypeScript + Tailwind
-- Backend: FastAPI + SQLAlchemy + Celery
-- Realtime: Socket.IO (Node.js)
-- Data and Infra: PostgreSQL, Redis, Qdrant, MinIO
-- AI: YOLOv8, Gemini/OpenAI integrations (optional keys)
+KrishiRaksha AI is a full-stack agriculture platform that provides crop disease detection, advisory workflows, realtime notifications, and support features for farmers and operators.
 
-## Project Structure
+## System Overview
+
+Core services:
+
+- Frontend web app: React + Vite + TypeScript
+- Backend API: FastAPI
+- Realtime service: Node.js + Socket.IO
+- Background workers: Celery with Redis broker
+- Data layer: SQLite or PostgreSQL (runtime-dependent)
+- AI inference: YOLOv8 model flow with optional external AI integrations
+
+High-level request flow:
+
+1. User uploads or captures crop image in web app.
+2. Frontend calls FastAPI detection endpoints.
+3. Backend performs inference and advisory processing.
+4. Realtime updates are pushed via Socket.IO where applicable.
+5. Results are rendered with confidence and severity metadata.
+
+## Repository Layout
+
 ```text
 KrishiRaksha AI/
-|-- backend/               # FastAPI app, AI models, Celery, socket server
-|   |-- app/
-|   |-- socket-server/
+|-- backend/
+|   |-- app/                    # API routes, models, schemas, realtime hooks
+|   |-- socket-server/          # Node.js Socket.IO service
+|   |-- scripts/                # Training and dataset utilities
+|   |-- tests/                  # Python tests
 |   |-- requirements.txt
-|-- frontend/              # Vite React web app
+|   |-- seed.py
+|-- frontend/
+|   |-- src/                    # Pages, components, API client
+|   |-- package.json
 |-- docker-compose.yml
-|-- .env
+|-- render.yaml
+|-- RENDER_DEPLOYMENT.md
+|-- DOCKER.md
 ```
 
-## Prerequisites
+## Runtime Requirements
+
 - Python 3.10+
 - Node.js 18+
 - npm
-- Docker Desktop (optional, for full container stack)
+- Docker Desktop (for containerized setup)
 
-## Environment Setup
-Create or update root .env:
+## Environment Contract
+
+Create root .env before running locally:
 
 ```env
 APP_ENV=development
@@ -43,10 +66,25 @@ VITE_MAPBOX_ACCESS_TOKEN=
 VITE_DEMO_MODE=true
 ```
 
-## Run Project Locally (Website Mode)
-Use 3 terminals from the project root.
+Variable notes:
 
-1) Backend API
+- APP_ENV: service mode selector
+- DEMO_MODE: toggles model fallback behavior
+- DATABASE_URL: SQLite for local quick start, PostgreSQL for production-grade workloads
+- REDIS_URL: required for Celery/async paths
+- VITE_API_URL and VITE_WS_URL: frontend service discovery
+
+Security notes:
+
+- Do not commit secrets or provider keys.
+- Store environment values in deployment platform secret store for production.
+
+## Local Runbook
+
+Run all commands from repository root in separate terminals.
+
+1. API service
+
 ```powershell
 cd backend
 pip install -r requirements.txt
@@ -54,62 +92,46 @@ python seed.py
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-2) Socket Server
+1. Realtime service
+
 ```powershell
 cd backend/socket-server
 npm install
 node server.js
 ```
 
-3) Frontend Website
+1. Frontend service
+
 ```powershell
 cd frontend
 npm install
 npm run dev -- --host 0.0.0.0 --port 3000
 ```
 
-Open in browser:
-- Website: http://localhost:3000
-- API docs: http://localhost:8000/docs
-- API health: http://localhost:8000/health
+Endpoints:
 
-## One-Command Run with Docker
-From the project root:
+- Frontend: [http://localhost:3000](http://localhost:3000)
+- API docs: [http://localhost:8000/docs](http://localhost:8000/docs)
+- API health: [http://localhost:8000/health](http://localhost:8000/health)
+
+## Container Runbook
+
+Start full stack:
 
 ```powershell
 docker compose up --build
 ```
 
-Open in browser:
-- Website: http://localhost:3000
-- API docs: http://localhost:8000/docs
-
-Stop containers:
+Stop stack:
 
 ```powershell
 docker compose down
 ```
 
-## Run Frontend on Network (Access from Phone/LAN)
-If you want to open the website from another device on same Wi-Fi:
+Use this mode to validate service wiring and environment parity before remote deployment.
 
-```powershell
-cd frontend
-npm run dev -- --host 0.0.0.0 --port 3000
-```
+## Build and Validation
 
-Then open:
-- http://YOUR_PC_IP:3000
-
-## Optional: Enable Real AI Vision
-By default, demo mode can be used. For real model inference/training:
-
-1. Ensure backend dependencies are installed from backend/requirements.txt.
-2. Place trained weights in backend/models/weights.
-3. Set DEMO_MODE=false in .env.
-4. Add valid API keys if you use Gemini/OpenAI features.
-
-## Useful Commands
 Backend tests:
 
 ```powershell
@@ -117,16 +139,62 @@ cd backend
 pytest -q
 ```
 
-Frontend build:
+Frontend production build:
 
 ```powershell
 cd frontend
 npm run build
 ```
 
-## Notes
-- If PostgreSQL is unavailable locally, the backend can fall back to SQLite with the default .env shown above.
-- Keep secrets in .env and never commit real API keys.
+## Artifact Policy
+
+To keep repository size manageable:
+
+- Training outputs under backend/runs are local artifacts.
+- Datasets under backend/data/datasets are local artifacts.
+- Model weights under backend/models/weights and backend/*.pt are local artifacts.
+
+These paths are intentionally ignored for future commits.
+
+## Deployment Operations
+
+Primary deployment assets in repository:
+
+- render.yaml
+- RENDER_DEPLOYMENT.md
+- docker-compose.yml
+- DOCKER.md
+
+Recommended production checklist:
+
+1. Validate all required environment variables in target platform.
+2. Run backend tests and frontend build before deploy.
+3. Verify API health endpoint post-deploy.
+4. Verify websocket connectivity from frontend.
+5. Validate inference path with representative sample image.
+
+## Troubleshooting Runbook
+
+TypeScript config errors in frontend:
+
+- Confirm frontend/tsconfig.json and frontend/tsconfig.node.json are aligned.
+
+Port conflicts:
+
+- Move frontend to another port with npm run dev -- --port 3001.
+
+Database startup issues:
+
+- Start with default SQLite configuration, then switch to PostgreSQL.
+
+Realtime connection issues:
+
+- Verify VITE_WS_URL and socket-server process health.
+
+Spell checker warnings for multilingual content:
+
+- Update cSpell workspace dictionary in .vscode/settings.json.
 
 ## License
-For educational and social impact use.
+
+See LICENSE.

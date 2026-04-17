@@ -3,6 +3,9 @@
     "composite": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
+    "outDir": "./.tsbuild/node",
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
     "allowJs": true
   },

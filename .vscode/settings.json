@@ -7,7 +7,25 @@
   "cSpell.words": [
     "Krishi",
     "Raksha",
-    "TXTIND"
+    "TXTIND",
+    "अंगमारी",
+    "अगेती",
+    "उकटा",
+    "एन्थ्राक्नोज",
+    "आसिता",
+    "चावल",
+    "चूर्णिल",
+    "झुलसा",
+    "धब्बा",
+    "पछेती",
+    "पत्ती",
+    "भूरा",
+    "Fusarium",
+    "aiosqlite",
+    "krishiraksha",
+    "MAPBOX",
+    "uvicorn",
+    "pytest"
   ],
   "chat.tools.terminal.autoApprove": {
     "&": true
