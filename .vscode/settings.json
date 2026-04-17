@@ -1,0 +1,15 @@
+{
+  "python.defaultInterpreterPath": "c:/projects/KrishiRaksha AI/.venv/Scripts/python.exe",
+  "python.analysis.extraPaths": [
+    "c:/projects/KrishiRaksha AI/backend"
+  ],
+  "python.analysis.typeCheckingMode": "basic",
+  "cSpell.words": [
+    "Krishi",
+    "Raksha",
+    "TXTIND"
+  ],
+  "chat.tools.terminal.autoApprove": {
+    "&": true
+  }
+}
