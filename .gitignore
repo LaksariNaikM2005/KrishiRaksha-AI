@@ -104,6 +104,33 @@ backend/runs/
 backend/*.pt
 *.cache
 
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Frontend build
+frontend/dist/
+frontend/node_modules/
+
+# Python environments
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.so
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+
+# IDE and editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
 # OS
 .DS_Store
 Thumbs.db

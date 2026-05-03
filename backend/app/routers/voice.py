@@ -29,9 +29,10 @@ async def transcribe_audio(
                 file=("audio.webm", audio_bytes, "audio/webm"),
                 response_format="verbose_json",
             )
+            # Use getattr for safer attribute access on Transcription object
             return {
-                "text": response.text,
-                "language": response.language,
+                "text": getattr(response, "text", ""),
+                "language": getattr(response, "language", "unknown"),
                 "confidence": 0.9,
             }
         except Exception as e:

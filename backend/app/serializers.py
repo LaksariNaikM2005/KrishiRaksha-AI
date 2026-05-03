@@ -1,10 +1,10 @@
 """Shared serialization helpers for API responses."""
 
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Any
 
 
-def optional_float(value: Optional[object]) -> Optional[float]:
+def optional_float(value: Any) -> Optional[float]:
     if value is None:
         return None
     return float(value)
